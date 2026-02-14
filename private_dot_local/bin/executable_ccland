@@ -1,0 +1,45 @@
+#!/bin/bash
+
+set -euxo pipefail
+# Default values
+CONTAINER_NAME=""
+HOST_PATH=""
+CONTAINER_PATH=""
+
+# Parse flags
+while getopts "c:v:" opt; do
+  case $opt in
+    c) CONTAINER_NAME="$OPTARG" ;;
+    v) 
+      IFS=':' read -r HOST_PATH CONTAINER_PATH <<< "$OPTARG"
+      ;;
+    \?) echo "Invalid option -$OPTARG" >&2; exit 1 ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+# Check if the specified container is running
+if [ -n "$CONTAINER_NAME" ] && docker ps -q -f name="^${CONTAINER_NAME}$" | grep -q .; then
+    
+    # Build the docker exec command array
+    CMD=(docker exec -i "$CONTAINER_NAME" clangd)
+
+    # Only add path-mappings if both host and container paths were provided
+    if [ -n "$HOST_PATH" ] && [ -n "$CONTAINER_PATH" ]; then
+        CMD+=("--path-mappings=${HOST_PATH}=${CONTAINER_PATH}")
+    fi
+
+    echo "[clangd-wrapper] Executing in container: $CONTAINER_NAME" >&2
+    exec "${CMD[@]}" "$@"
+
+else
+    echo "[clangd-wrapper] Container not found/running. Falling back to host clangd." >&2
+    
+    if ! command -v clangd &> /dev/null; then
+        echo "Error: local clangd not found." >&2
+        exit 1
+    fi
+
+    exec clangd "$@"
+fi
