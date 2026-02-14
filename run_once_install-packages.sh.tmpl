@@ -27,7 +27,8 @@ install_with_pacman() {
         make \
         unzip \
         python-pynvim \
-        rustup
+        rustup \
+        github-cli
 }
 
 install_with_apt() {
@@ -45,7 +46,8 @@ install_with_apt() {
         ripgrep \
         sqlite3 \
         make \
-        unzip
+        unzip \
+        gh
     echo "NOTE: Some packages are not available via apt. Install manually: dust, eza, duf, procs, bottom, starship, lazygit, nvm, rustup, lldb, yarn, python-pynvim"
 }
 
@@ -74,7 +76,8 @@ install_with_brew() {
         nvm \
         make \
         unzip \
-        rustup
+        rustup \
+        gh
     pip3 install pynvim
 }
 
@@ -91,5 +94,8 @@ else
     echo "ERROR: No supported package manager found (pacman, apt, or brew)"
     exit 1
 fi
+
+# Install Claude Code
+curl -fsSL https://claude.ai/install.sh | bash
 
 echo "Package installation complete!"
