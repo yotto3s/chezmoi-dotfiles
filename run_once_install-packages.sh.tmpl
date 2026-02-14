@@ -1,0 +1,95 @@
+#!/bin/bash
+set -euo pipefail
+
+install_with_pacman() {
+    sudo pacman -S --needed --noconfirm \
+        git \
+        parallel \
+        dust \
+        bat \
+        eza \
+        fd \
+        duf \
+        procs \
+        bottom \
+        neovim \
+        tmux \
+        fzf \
+        tig \
+        starship \
+        lazygit \
+        zoxide \
+        ripgrep \
+        sqlite \
+        yarn \
+        lldb \
+        nvm \
+        make \
+        unzip \
+        python-pynvim \
+        rustup
+}
+
+install_with_apt() {
+    sudo apt-get update
+    sudo apt-get install -y \
+        git \
+        parallel \
+        bat \
+        fd-find \
+        neovim \
+        tmux \
+        fzf \
+        tig \
+        zoxide \
+        ripgrep \
+        sqlite3 \
+        make \
+        unzip
+    echo "NOTE: Some packages are not available via apt. Install manually: dust, eza, duf, procs, bottom, starship, lazygit, nvm, rustup, lldb, yarn, python-pynvim"
+}
+
+install_with_brew() {
+    brew install \
+        git \
+        parallel \
+        dust \
+        bat \
+        eza \
+        fd \
+        duf \
+        procs \
+        bottom \
+        neovim \
+        tmux \
+        fzf \
+        tig \
+        starship \
+        lazygit \
+        zoxide \
+        ripgrep \
+        sqlite \
+        yarn \
+        llvm \
+        nvm \
+        make \
+        unzip \
+        rustup
+    pip3 install pynvim
+}
+
+if command -v pacman &> /dev/null; then
+    echo "Detected pacman (Arch/Manjaro)"
+    install_with_pacman
+elif command -v apt-get &> /dev/null; then
+    echo "Detected apt (Debian/Ubuntu)"
+    install_with_apt
+elif command -v brew &> /dev/null; then
+    echo "Detected brew (macOS)"
+    install_with_brew
+else
+    echo "ERROR: No supported package manager found (pacman, apt, or brew)"
+    exit 1
+fi
+
+echo "Package installation complete!"
